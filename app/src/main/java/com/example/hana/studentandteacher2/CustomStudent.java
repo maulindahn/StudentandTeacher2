@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -19,28 +21,35 @@ import java.util.ArrayList;
 public class CustomStudent extends AppCompatActivity{
     private EditText edit_no, edit_noreg, edit_nama, edit_mail, edit_phone;
     private FloatingActionButton button_Done, button_Cancel;
-    private boolean isEdit = false;
+    private int edit_nos, position;
+    private int state = 0;
     ArrayList<Student> studentList;
-    private int position;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_student);
         studentList = StudentActivity.studentList;
-
         edit_no = (EditText) findViewById(R.id.edit_no);
+        edit_no.setEnabled(false);
         edit_noreg = (EditText) findViewById(R.id.edit_noreg);
         edit_nama = (EditText) findViewById(R.id.edit_nama);
         edit_mail = (EditText) findViewById(R.id.edit_mail);
         edit_phone = (EditText) findViewById(R.id.edit_phone);
-
         Intent i = getIntent();
-        if(i.getBooleanExtra("isEdit", true)) {
-            isEdit = true;
-            Student student = (Student) i.getSerializableExtra("student");
+        String manipulate = i.getStringExtra("manipulate");
+        String isAdd = i.getStringExtra(manipulate);
+        String isEdit = i.getStringExtra(manipulate);
+        if(manipulate == isAdd) {
+            setTitle("Add Student");
+            edit_nos = i.getIntExtra("currentNO", 0);
+            edit_no.setText(String.valueOf(edit_nos));
+        } else if(manipulate == isEdit){
+            setTitle("Edit Student");
+            state = 1;
+            Student student = (Student) i.getSerializableExtra("studentData");
             edit_no.setText(String.valueOf(student.getNo()));
+            edit_nos = student.getNo();
             edit_noreg.setText(student.getNoreg());
             edit_nama.setText(student.getName());
             edit_mail.setText(student.getMail());
@@ -65,16 +74,24 @@ public class CustomStudent extends AppCompatActivity{
         });
     }
 
-    public void saveStudent(){
-
-        if (isEdit){
-            Student tmpStudent = new Student(Integer.parseInt(edit_no.getText().toString()), edit_noreg.getText().toString(), edit_nama.getText().toString(), edit_mail.getText().toString(), edit_phone.getText().toString());
-            studentList.set(position, tmpStudent);
-            finish();
-        } else {
-            Student tmpStudent = new Student(Integer.parseInt(edit_no.getText().toString()), edit_noreg.getText().toString(), edit_nama.getText().toString(), edit_mail.getText().toString(), edit_phone.getText().toString());
-            studentList.add(tmpStudent);
-            finish();
+    public void saveStudent() {
+        int No = Integer.parseInt(this.edit_no.getText().toString());
+        String Name = this.edit_nama.getText().toString();
+        String Mail = this.edit_mail.getText().toString();
+        String Noreg = this.edit_noreg.getText().toString();
+        String Phone = this.edit_phone.getText().toString();
+        Student tmp = new Student(No, Noreg, Name, Mail, Phone);
+        Intent i = new Intent();
+        switch (this.state) {
+            case 0:
+                i.putExtra("manipulate", "isAdd");
+                studentList.set(position, tmp);
+                finish();
+            case 1:
+                i.putExtra("manipulate", "isEdit");
+                i.putExtra("edit_no", edit_nos);
+                setResult(position, i);
+                finish();
         }
     }
 }

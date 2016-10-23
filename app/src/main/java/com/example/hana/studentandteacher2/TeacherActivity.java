@@ -36,11 +36,11 @@ public class TeacherActivity extends AppCompatActivity {
         list_item2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Teacher teacherItem = teacherList.get(position);
+                Teacher teacher= teacherList.get(position);
                 Intent i = new Intent(TeacherActivity.this, CustomTeacher.class);
-                i.putExtra("student", (Serializable) teacherItem); // ini passing object
-                i.putExtra("isEdit", true);
-                i.putExtra("position", position);
+                i.putExtra("manipulate", "isEdit");
+                i.putExtra("teacherData", (Serializable) teacher);
+                i.putExtra("No", position);
                 startActivity(i);
             }
         });
@@ -49,12 +49,18 @@ public class TeacherActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(TeacherActivity.this, CustomTeacher.class);
-                i.putExtra("isEdit", false);
+                i.putExtra("manipulate", "isAdd");
+                int currentNO = teacherList.size();
+                i.putExtra("currentNO", currentNO );
                 startActivity(i);
             }
         });
+    }
 
-
+    public void refreshNO() {
+        for (int i =0; i < teacherList.size();i++) {
+            teacherList.get(i).setNo(i);
+        }
     }
 
     private void populateTeacherDummies() {
@@ -94,6 +100,7 @@ public class TeacherActivity extends AppCompatActivity {
             teacherAdapter = new TeacherAdapter(this, teacherList);
             empty_view2.setText("");
         }
+        refreshNO();
         list_item2.setAdapter(teacherAdapter);
     }
 

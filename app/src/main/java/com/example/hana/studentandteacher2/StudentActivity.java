@@ -36,11 +36,11 @@ public class StudentActivity extends AppCompatActivity {
         list_item.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Student studentItem = studentList.get(position);
+                Student student = studentList.get(position);
                 Intent i = new Intent(StudentActivity.this, CustomStudent.class);
-                i.putExtra("student", (Serializable) studentItem); // ini passing object
-                i.putExtra("isEdit", true);
-                i.putExtra("position", position);
+                i.putExtra("manipulate", "isEdit");
+                i.putExtra("studentData", (Serializable) student);
+                i.putExtra("No", position);
                 startActivity(i);
             }
         });
@@ -49,18 +49,24 @@ public class StudentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(StudentActivity.this, CustomStudent.class);
-                i.putExtra("isEdit", false);
+                i.putExtra("manipulate", "isAdd");
+                int currentNO = studentList.size();
+                i.putExtra("currentNO", currentNO );
                 startActivity(i);
             }
         });
+    }
 
-
+    public void refreshNO() {
+        for (int i =0; i < studentList.size();i++) {
+            studentList.get(i).setNo(i);
+        }
     }
 
     private void populateStudentDummies() {
         int i = studentList.size();
         studentList.add(new Student(i, "Hana Maulinda", "3145136193", "hanamaulinda@gmail.com", "081318400299"));
-        studentList.add(new Student(i+1, "Bestian Fangaro", "3145136194", "dianrakasiwi@gmail.com", "082233344555"));
+        studentList.add(new Student(i+1, "Bestian Fangaro", "3145136194", "bestianf@gmail.com", "082233344555"));
     }
 
     public void createDummy(){
@@ -94,6 +100,7 @@ public class StudentActivity extends AppCompatActivity {
             studentAdapter = new StudentAdapter(this, studentList);
             empty_view.setText("");
         }
+        refreshNO();
         list_item.setAdapter(studentAdapter);
     }
 
