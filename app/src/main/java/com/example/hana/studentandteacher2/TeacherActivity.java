@@ -36,11 +36,11 @@ public class TeacherActivity extends AppCompatActivity {
         list_item2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Teacher teacher= teacherList.get(position);
+                Teacher teacherItem = teacherList.get(position);
                 Intent i = new Intent(TeacherActivity.this, CustomTeacher.class);
-                i.putExtra("manipulate", "isEdit");
-                i.putExtra("teacherData", (Serializable) teacher);
-                i.putExtra("No", position);
+                i.putExtra("teacher", (Serializable) teacherItem); // ini passing object
+                i.putExtra("isEdit", true);
+                i.putExtra("position", position);
                 startActivity(i);
             }
         });
@@ -49,9 +49,7 @@ public class TeacherActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(TeacherActivity.this, CustomTeacher.class);
-                i.putExtra("manipulate", "isAdd");
-                int currentNO = teacherList.size();
-                i.putExtra("currentNO", currentNO );
+                i.putExtra("isEdit", false);
                 startActivity(i);
             }
         });

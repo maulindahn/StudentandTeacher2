@@ -9,13 +9,17 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 
+import static com.example.hana.studentandteacher2.R.color.student;
+import static com.example.hana.studentandteacher2.R.color.teacher;
+
 /**
  * Created by user pc on 21/10/2016.
  */
 public class CustomTeacher extends AppCompatActivity {
     private EditText edit_no_t, edit_nip, edit_nama_t, edit_mail_t, edit_phone_t;
     private FloatingActionButton button_done, button_cancel;
-    private int edit_nos_t, position;
+    private boolean isEdit = false;
+    private int position;
     private int state = 0;
     ArrayList<Teacher> teacherList;
 
@@ -25,31 +29,23 @@ public class CustomTeacher extends AppCompatActivity {
         setContentView(R.layout.custom_teacher);
         teacherList = TeacherActivity.teacherList;
         edit_no_t = (EditText) findViewById(R.id.edit_no_t);
-        edit_no_t.setEnabled(false);
         edit_nip = (EditText) findViewById(R.id.edit_nip);
         edit_nama_t = (EditText) findViewById(R.id.edit_nama_t);
         edit_mail_t = (EditText) findViewById(R.id.edit_mail_t);
         edit_phone_t = (EditText) findViewById(R.id.edit_phone_t);
+
         Intent i = getIntent();
-        String manipulate = i.getStringExtra("manipulate");
-        String isAdd = i.getStringExtra(manipulate);
-        String isEdit = i.getStringExtra(manipulate);
-        if(manipulate == isAdd) {
-            setTitle("Add Teacher");
-            edit_nos_t = i.getIntExtra("currentNO", 0);
-            edit_no_t.setText(String.valueOf(edit_nos_t));
-        } else if(manipulate == isEdit){
-            setTitle("Edit Teacher");
-            state = 1;
-            Teacher teacher = (Teacher) i.getSerializableExtra("teacherData");
+        if(i.getBooleanExtra("isEdit", true)) {
+            isEdit = true;
+            Teacher teacher = (Teacher) i.getSerializableExtra("teacher");
             edit_no_t.setText(String.valueOf(teacher.getNo()));
-            edit_nos_t = teacher.getNo();
             edit_nip.setText(teacher.getNip());
             edit_nama_t.setText(teacher.getName());
             edit_mail_t.setText(teacher.getMail());
             edit_phone_t.setText(teacher.getPhone());
             position = i.getIntExtra("position", 0);
         }
+
 
         button_done = (FloatingActionButton) findViewById(R.id.button_done);
         button_done.setOnClickListener(new View.OnClickListener() {
@@ -69,23 +65,14 @@ public class CustomTeacher extends AppCompatActivity {
     }
 
     public void saveTeacher() {
-        int No = Integer.parseInt(this.edit_no_t.getText().toString());
-        String Name = this.edit_nama_t.getText().toString();
-        String Mail = this.edit_mail_t.getText().toString();
-        String Nip = this.edit_nip.getText().toString();
-        String Phone = this.edit_phone_t.getText().toString();
-        Teacher tmp = new Teacher(No, Nip, Name, Mail, Phone);
-        Intent i = new Intent();
-        switch (this.state) {
-            case 0:
-                i.putExtra("manipulate", "isAdd");
-                teacherList.set(position, tmp);
-                finish();
-            case 1:
-                i.putExtra("manipulate", "isEdit");
-                i.putExtra("edit_no_t", edit_nos_t);
-                setResult(position, i);
-                finish();
+        if (isEdit){
+            Teacher tmpTeacher = new Teacher(Integer.parseInt(edit_no_t.getText().toString()), edit_nip.getText().toString(), edit_nama_t.getText().toString(), edit_mail_t.getText().toString(), edit_phone_t.getText().toString());
+            teacherList.set(position, tmpTeacher);
+            finish();
+        } else {
+            Teacher tmpTeacher = new Teacher(Integer.parseInt(edit_no_t.getText().toString()), edit_nip.getText().toString(), edit_nama_t.getText().toString(), edit_mail_t.getText().toString(), edit_phone_t.getText().toString());
+            teacherList.add(tmpTeacher);
+            finish();
         }
     }
 }
